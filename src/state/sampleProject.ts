@@ -1,16 +1,24 @@
-// Loads the bundled sample blueprint (assets/Room2105_bluprint.jpeg) as a
-// reference image, for onboarding/demo purposes (plan.md M6).
+// Loads one of the bundled sample blueprints as a reference image, for
+// onboarding/demo purposes (plan.md M6).
 
 import { v4 as uuid } from 'uuid';
 import { fileToDownscaledDataUrl } from '../core/image/downscaleImage';
 import { useProjectStore } from './projectStore';
 
-const SAMPLE_IMAGE_URL = '/sample/Room2105_bluprint.jpeg';
+export type SampleFloorPlanType = 'studio' | 'oneBedroom' | 'twoBedroom';
 
-export async function loadSampleReferenceImage(): Promise<void> {
-  const response = await fetch(SAMPLE_IMAGE_URL);
+const SAMPLE_IMAGE_URLS: Record<SampleFloorPlanType, string> = {
+  studio: '/sample/sample_blueprint_studio.png',
+  oneBedroom: '/sample/sample_blueprint_oneBedroom.png',
+  twoBedroom: '/sample/sample_blueprint_twoBedroom.png',
+};
+
+export async function loadSampleReferenceImage(type: SampleFloorPlanType): Promise<void> {
+  const url = SAMPLE_IMAGE_URLS[type];
+  const response = await fetch(url);
   const blob = await response.blob();
-  const file = new File([blob], 'Room2105_bluprint.jpeg', { type: blob.type || 'image/jpeg' });
+  const fileName = url.split('/').pop() ?? `sample_blueprint_${type}.png`;
+  const file = new File([blob], fileName, { type: blob.type || 'image/png' });
 
   const { dataUrl, naturalWidthPx, naturalHeightPx } = await fileToDownscaledDataUrl(file);
 

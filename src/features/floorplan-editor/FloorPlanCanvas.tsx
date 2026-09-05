@@ -15,7 +15,7 @@ import {
   wallToOrientedRect,
 } from '../../core/geometry/overlap';
 import { getCatalogItem } from '../../core/model/catalog';
-import { loadSampleReferenceImage } from '../../state/sampleProject';
+import { loadSampleReferenceImage, type SampleFloorPlanType } from '../../state/sampleProject';
 import { sanitizeFileName } from '../../state/persistence';
 import { downloadDataUrl } from '../../state/imageExport';
 import type { Point2D, ReferenceImage, Room, Wall } from '../../core/model/types';
@@ -24,6 +24,7 @@ import { WallsLayer } from './WallsLayer';
 import { RoomLabels } from './RoomLabels';
 import { RoomNamePrompt } from './RoomNamePrompt';
 import { FurnitureLayer } from './FurnitureLayer';
+import { SampleFloorPlanModal } from './SampleFloorPlanModal';
 
 const MIN_ZOOM = 0.01;
 const MAX_ZOOM = 2;
@@ -64,6 +65,7 @@ export function FloorPlanCanvas() {
   const [isPanning, setIsPanning] = useState(false);
   const [isHoveringContent, setIsHoveringContent] = useState(false);
   const [isDraggingShape, setIsDraggingShape] = useState(false);
+  const [isSampleModalOpen, setIsSampleModalOpen] = useState(false);
   const panStateRef = useRef<{ startScreen: Point2D; startPan: Point2D } | null>(null);
   const didPanRef = useRef(false);
 
@@ -498,11 +500,21 @@ export function FloorPlanCanvas() {
           <button
             type="button"
             className="pointer-events-auto rounded border border-gray-300 bg-white px-3 py-1 text-xs hover:bg-gray-50"
-            onClick={() => void loadSampleReferenceImage()}
+            onClick={() => setIsSampleModalOpen(true)}
           >
             Load Sample Blueprint
           </button>
         </div>
+      )}
+
+      {isSampleModalOpen && (
+        <SampleFloorPlanModal
+          onSelect={(type: SampleFloorPlanType) => {
+            void loadSampleReferenceImage(type);
+            setIsSampleModalOpen(false);
+          }}
+          onCancel={() => setIsSampleModalOpen(false)}
+        />
       )}
 
       {size.width > 0 && size.height > 0 && (

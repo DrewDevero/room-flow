@@ -14,9 +14,9 @@ npm install
 npm run dev
 ```
 
-Open the printed local URL. Click **Load Sample Blueprint** on the empty canvas to try the
-app with the bundled sample floor plan ([assets/Room2105_bluprint.jpeg](assets/Room2105_bluprint.jpeg)),
-or use **Add Reference Image** to upload your own.
+Open the printed local URL. Click **Load Sample Blueprint** on the empty canvas and pick
+Studio, One Bedroom, or Two Bedroom to try the app with a bundled sample floor plan, or
+use **Add Reference Image** to upload your own.
 
 ## Typical Workflow
 
