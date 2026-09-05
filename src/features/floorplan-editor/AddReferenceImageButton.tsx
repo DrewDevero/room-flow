@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { v4 as uuid } from 'uuid';
 import { fileToDownscaledDataUrl } from '../../core/image/downscaleImage';
+import { centeredImageOffsetMm } from '../../core/geometry/imagePlacement';
 import { useProjectStore } from '../../state/projectStore';
 
 export function AddReferenceImageButton() {
@@ -13,6 +14,7 @@ export function AddReferenceImageButton() {
     if (!file) return;
 
     const { dataUrl, naturalWidthPx, naturalHeightPx } = await fileToDownscaledDataUrl(file);
+    const pixelsPerMm = 1;
 
     addReferenceImage({
       id: uuid(),
@@ -20,10 +22,10 @@ export function AddReferenceImageButton() {
       dataUrl,
       naturalWidthPx,
       naturalHeightPx,
-      // Default scale of 1 image-px per mm until the user calibrates it.
-      offsetMm: { x: 0, y: 0 },
+      // Center the image on the grid origin until the user repositions it.
+      offsetMm: centeredImageOffsetMm(naturalWidthPx, naturalHeightPx, pixelsPerMm),
       rotationDeg: 0,
-      pixelsPerMm: 1,
+      pixelsPerMm,
       opacity: 0.5,
       locked: false,
     });

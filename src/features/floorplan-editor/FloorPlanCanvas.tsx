@@ -5,6 +5,7 @@ import { v4 as uuid } from 'uuid';
 import type Konva from 'konva';
 import { useProjectStore } from '../../state/projectStore';
 import { useUiStore } from '../../state/uiStore';
+import { useToastStore } from '../../state/toastStore';
 import { computeGridLines } from '../../core/geometry/grid';
 import { computeRecalibratedPixelsPerMm } from '../../core/geometry/calibration';
 import { distance, resolveRoomPolygon, snapToAngle, snapToNearbyPoint } from '../../core/geometry/walls';
@@ -97,6 +98,7 @@ export function FloorPlanCanvas() {
   const setArmedCatalogId = useUiStore((s) => s.setArmedCatalogId);
   const finishMappingRequestId = useUiStore((s) => s.finishMappingRequestId);
   const exportImageRequestId = useUiStore((s) => s.exportImageRequestId);
+  const showToast = useToastStore((s) => s.showToast);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -510,7 +512,9 @@ export function FloorPlanCanvas() {
       {isSampleModalOpen && (
         <SampleFloorPlanModal
           onSelect={(type: SampleFloorPlanType) => {
-            void loadSampleReferenceImage(type);
+            loadSampleReferenceImage(type).catch(() => {
+              showToast("Couldn't load that sample blueprint. Please try again.");
+            });
             setIsSampleModalOpen(false);
           }}
           onCancel={() => setIsSampleModalOpen(false)}
