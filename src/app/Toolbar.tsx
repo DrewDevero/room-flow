@@ -1,13 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { useProjectStore, useProjectTemporal } from '../state/projectStore';
 import { useUiStore, type EditorTool } from '../state/uiStore';
-import { useToastStore } from '../state/toastStore';
 import { AddReferenceImageButton } from '../features/floorplan-editor/AddReferenceImageButton';
-import { exportProjectToFile, parseProjectJson } from '../state/persistence';
+import { importProjectFile } from '../state/fileIntake';
+import { exportProjectToFile } from '../state/persistence';
 
 export function Toolbar() {
   const project = useProjectStore((s) => s.project);
-  const setProject = useProjectStore((s) => s.setProject);
   const projectName = project.name;
   const unitSystem = project.unitSystem;
   const renameProject = useProjectStore((s) => s.renameProject);
@@ -18,7 +17,6 @@ export function Toolbar() {
   const snapEnabled = useUiStore((s) => s.snapEnabled);
   const setSnapEnabled = useUiStore((s) => s.setSnapEnabled);
   const requestFinishMapping = useUiStore((s) => s.requestFinishMapping);
-  const showToast = useToastStore((s) => s.showToast);
   const importInputRef = useRef<HTMLInputElement>(null);
 
   const canUndo = useProjectTemporal((s) => s.pastStates.length > 0);
@@ -50,14 +48,14 @@ export function Toolbar() {
   }, [undo, redo]);
 
   return (
-    <header className="flex h-12 shrink-0 items-center gap-3 overflow-x-auto border-b border-gray-200 bg-white px-3 text-sm">
+    <header className="flex h-12 shrink-0 items-center gap-2 overflow-x-auto border-b border-gray-200 bg-white px-2 text-sm sm:gap-3 sm:px-3 [&>*]:shrink-0">
       <input
-        className="w-48 rounded border border-transparent px-2 py-1 font-medium hover:border-gray-300 focus:border-gray-400 focus:outline focus:outline-2 focus:outline-blue-500"
+        className="w-28 rounded border border-transparent px-2 py-1 font-medium hover:border-gray-300 focus:border-gray-400 focus:outline focus:outline-2 focus:outline-blue-500 sm:w-48"
         value={projectName}
         aria-label="Project name"
         onChange={(e) => renameProject(e.target.value)}
       />
-      <div className="flex-1" />
+      <div className="hidden flex-1 xl:block" />
       <button
         type="button"
         className="rounded px-2 py-1 hover:bg-gray-100 disabled:opacity-40 disabled:hover:bg-transparent"
@@ -166,15 +164,7 @@ export function Toolbar() {
           const file = e.target.files?.[0];
           e.target.value = '';
           if (!file) return;
-          file.text().then((text) => {
-            const result = parseProjectJson(text);
-            if (result.success) {
-              setProject(result.project);
-              showToast(`Imported "${result.project.name}"`);
-            } else {
-              showToast(result.error);
-            }
-          });
+          void importProjectFile(file);
         }}
       />
       <button

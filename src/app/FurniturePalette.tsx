@@ -37,13 +37,13 @@ export function FurniturePalette() {
   }, [search]);
 
   return (
-    <aside className="flex w-56 shrink-0 flex-col overflow-y-auto border-r border-gray-200 bg-white">
+    <aside className="flex w-full shrink-0 flex-col overflow-y-auto bg-white md:w-56 md:border-r md:border-gray-200">
       <div className="border-b border-gray-200 p-2">
         <input
           type="text"
           placeholder="Search furniture..."
           aria-label="Search furniture"
-          className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+          className="w-full rounded border border-gray-300 px-2 py-2 text-base md:py-1 md:text-sm"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -59,7 +59,7 @@ export function FurniturePalette() {
             <h3 className="mb-1 text-xs font-semibold uppercase text-gray-500">
               {CATEGORY_LABELS[category]}
             </h3>
-            <div className="flex flex-col gap-1">
+            <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 md:grid-cols-1">
               {items.map((item) => (
                 <button
                   key={item.id}
@@ -69,7 +69,7 @@ export function FurniturePalette() {
                   onClick={() =>
                     setArmedCatalogId(armedCatalogId === item.id ? null : item.id)
                   }
-                  className={`flex items-center gap-2 rounded border px-2 py-1 text-left text-xs ${
+                  className={`flex items-center gap-2 rounded border px-2 py-2 text-left text-xs md:py-1 ${
                     armedCatalogId === item.id
                       ? 'border-gray-900 bg-gray-900 text-white'
                       : 'border-gray-200 hover:bg-gray-50'
@@ -82,9 +82,9 @@ export function FurniturePalette() {
                       borderRadius: item.shape === 'circle' ? '9999px' : '2px',
                     }}
                   />
-                  <span className="flex-1">
-                    <span className="block font-medium">{item.name}</span>
-                    <span className="block text-[10px] text-gray-400">
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-medium">{item.name}</span>
+                    <span className="block truncate text-[10px] text-gray-400">
                       {formatLength(item.defaultWidthMm, unitSystem)} ×{' '}
                       {formatLength(item.defaultDepthMm, unitSystem)}
                     </span>

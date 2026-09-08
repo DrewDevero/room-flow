@@ -37,7 +37,8 @@ export function CanvasArea() {
           className="rounded px-3 py-1 text-xs font-medium hover:bg-gray-100"
           onClick={requestExportImage}
         >
-          Save {viewMode.toUpperCase()} as Image
+          <span className="hidden sm:inline">Save {viewMode.toUpperCase()} as Image</span>
+          <span className="sm:hidden">Save Image</span>
         </button>
       </div>
       <div className="relative flex-1 overflow-hidden">

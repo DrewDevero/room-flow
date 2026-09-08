@@ -8,4 +8,7 @@ body,
 
 body {
   margin: 0;
+  /* Stop iOS rubber-banding the page while panning the canvas. */
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
 }

@@ -68,6 +68,8 @@ export function FloorPlanCanvas() {
   const [isDraggingShape, setIsDraggingShape] = useState(false);
   const [isSampleModalOpen, setIsSampleModalOpen] = useState(false);
   const panStateRef = useRef<{ startScreen: Point2D; startPan: Point2D } | null>(null);
+  const pinchStateRef = useRef<{ lastDistance: number; lastCenter: Point2D } | null>(null);
+  const lastTapAtRef = useRef(0);
   const didPanRef = useRef(false);
 
   const unitSystem = useProjectStore((s) => s.project.unitSystem);
@@ -308,6 +310,79 @@ export function FloorPlanCanvas() {
     setIsPanning(false);
   };
 
+  const screenPointFromTouch = (touch: Touch): Point2D => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    return { x: touch.clientX - (rect?.left ?? 0), y: touch.clientY - (rect?.top ?? 0) };
+  };
+
+  const handleTouchStart = (e: Konva.KonvaEventObject<TouchEvent>) => {
+    const touches = e.evt.touches;
+    if (touches.length >= 2) {
+      panStateRef.current = null;
+      pinchStateRef.current = null;
+      didPanRef.current = true;
+      setIsPanning(false);
+      return;
+    }
+    const isEmptyBackground = e.target === e.target.getStage();
+    if (touches.length === 1 && isEmptyBackground && activeTool === 'select' && !armedCatalogId) {
+      panStateRef.current = {
+        startScreen: { x: touches[0].clientX, y: touches[0].clientY },
+        startPan: pan,
+      };
+      didPanRef.current = false;
+      setIsPanning(true);
+    }
+  };
+
+  const handleTouchMove = (e: Konva.KonvaEventObject<TouchEvent>) => {
+    const touches = e.evt.touches;
+
+    if (touches.length >= 2) {
+      e.evt.preventDefault();
+      const a = screenPointFromTouch(touches[0]);
+      const b = screenPointFromTouch(touches[1]);
+      const distancePx = Math.hypot(b.x - a.x, b.y - a.y);
+      const center = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      const previous = pinchStateRef.current;
+
+      if (previous && previous.lastDistance > 0) {
+        const newZoom = Math.min(
+          MAX_ZOOM,
+          Math.max(MIN_ZOOM, zoom * (distancePx / previous.lastDistance)),
+        );
+        // Keep the mm point under the previous pinch center pinned to the new center,
+        // which gives pinch-zoom and two-finger panning in one step.
+        const mmUnderCenter = {
+          x: (previous.lastCenter.x - pan.x) / zoom,
+          y: (previous.lastCenter.y - pan.y) / zoom,
+        };
+        setPan({ x: center.x - mmUnderCenter.x * newZoom, y: center.y - mmUnderCenter.y * newZoom });
+        setZoom(newZoom);
+      }
+
+      pinchStateRef.current = { lastDistance: distancePx, lastCenter: center };
+      didPanRef.current = true;
+      return;
+    }
+
+    const panState = panStateRef.current;
+    if (!panState || touches.length !== 1) return;
+    e.evt.preventDefault();
+    const deltaX = touches[0].clientX - panState.startScreen.x;
+    const deltaY = touches[0].clientY - panState.startScreen.y;
+    if (Math.hypot(deltaX, deltaY) > PAN_DRAG_THRESHOLD_PX) {
+      didPanRef.current = true;
+    }
+    setPan({ x: panState.startPan.x + deltaX, y: panState.startPan.y + deltaY });
+  };
+
+  const handleTouchEnd = () => {
+    panStateRef.current = null;
+    pinchStateRef.current = null;
+    setIsPanning(false);
+  };
+
   const snapThresholdMm = 10 / zoom;
 
   function resolveDrawingPoint(raw: Point2D): Point2D {
@@ -433,6 +508,24 @@ export function FloorPlanCanvas() {
     }
   };
 
+  const TAP_CLICK_DEDUPE_MS = 700;
+
+  // Browsers emit a synthetic click after a tap; ignore it so a tap acts once.
+  const handleStageTap = () => {
+    lastTapAtRef.current = Date.now();
+    handleStageClick();
+  };
+
+  const handleStageClickGuarded = () => {
+    if (Date.now() - lastTapAtRef.current < TAP_CLICK_DEDUPE_MS) return;
+    handleStageClick();
+  };
+
+  const handleStageDblTap = () => {
+    lastTapAtRef.current = Date.now();
+    handleStageDblClick();
+  };
+
   const cancelCalibration = () => {
     setCalibrationPoints({ a: null, b: null });
     setActiveTool('select');
@@ -489,7 +582,7 @@ export function FloorPlanCanvas() {
   return (
     <div
       ref={containerRef}
-      className="relative h-full w-full overflow-hidden"
+      className="relative h-full w-full touch-none overflow-hidden"
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleContainerDrop}
     >
@@ -527,11 +620,16 @@ export function FloorPlanCanvas() {
           width={size.width}
           height={size.height}
           onWheel={handleWheel}
-          onClick={handleStageClick}
+          onClick={handleStageClickGuarded}
+          onTap={handleStageTap}
           onDblClick={handleStageDblClick}
+          onDblTap={handleStageDblTap}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
           onDragStart={() => setIsDraggingShape(true)}
           onDragEnd={() => setIsDraggingShape(false)}
           style={{ cursor: cursorStyle }}

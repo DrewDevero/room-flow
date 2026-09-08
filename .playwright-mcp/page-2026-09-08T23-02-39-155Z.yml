@@ -1,0 +1,31 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - textbox "Project name" [ref=e5]: Untitled Project
+    - button "Undo" [disabled] [ref=e6]
+    - button "Redo" [disabled] [ref=e7]
+    - generic [ref=e9]:
+      - button "ft-in" [ref=e10]
+      - button "metric" [ref=e11]
+    - button "Map Floor" [ref=e13]
+    - button "Wall" [ref=e15]
+    - button "Door" [ref=e16]
+    - button "Window" [ref=e17]
+    - generic [ref=e18]:
+      - checkbox "Snap" [checked] [ref=e19]
+      - text: Snap
+    - button "Add Reference Image" [ref=e21]
+    - button "Calibrate" [disabled] [ref=e22]
+    - button "Import" [ref=e24]
+    - button "Export" [ref=e25]
+  - main [ref=e27]:
+    - generic [ref=e28]:
+      - button "2D" [ref=e29]
+      - button "3D" [ref=e30]
+      - button "Save Image" [ref=e31]
+    - generic [ref=e33]:
+      - generic:
+        - paragraph: Add a reference image (Toolbar → "Add Reference Image") to trace over a blueprint, or use "Map Floor" / "Wall" to start drawing walls directly.
+        - button "Load Sample Blueprint" [ref=e34]
+  - navigation [ref=e37]:
+    - button "Furniture" [ref=e38]
+    - button "Inspector" [ref=e39]

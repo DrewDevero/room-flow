@@ -1,34 +1,14 @@
 import { useRef } from 'react';
-import { v4 as uuid } from 'uuid';
-import { fileToDownscaledDataUrl } from '../../core/image/downscaleImage';
-import { centeredImageOffsetMm } from '../../core/geometry/imagePlacement';
-import { useProjectStore } from '../../state/projectStore';
+import { importReferenceImageFile } from '../../state/fileIntake';
 
 export function AddReferenceImageButton() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const addReferenceImage = useProjectStore((s) => s.addReferenceImage);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-
-    const { dataUrl, naturalWidthPx, naturalHeightPx } = await fileToDownscaledDataUrl(file);
-    const pixelsPerMm = 1;
-
-    addReferenceImage({
-      id: uuid(),
-      fileName: file.name,
-      dataUrl,
-      naturalWidthPx,
-      naturalHeightPx,
-      // Center the image on the grid origin until the user repositions it.
-      offsetMm: centeredImageOffsetMm(naturalWidthPx, naturalHeightPx, pixelsPerMm),
-      rotationDeg: 0,
-      pixelsPerMm,
-      opacity: 0.5,
-      locked: false,
-    });
+    await importReferenceImageFile(file);
   };
 
   return (
@@ -42,10 +22,11 @@ export function AddReferenceImageButton() {
       />
       <button
         type="button"
-        className="rounded px-2 py-1 hover:bg-gray-100"
+        className="whitespace-nowrap rounded px-2 py-1 hover:bg-gray-100"
         onClick={() => inputRef.current?.click()}
       >
-        Add Reference Image
+        <span className="hidden 2xl:inline">Add Reference Image</span>
+        <span className="2xl:hidden">Image</span>
       </button>
     </>
   );

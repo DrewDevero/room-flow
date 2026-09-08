@@ -14,7 +14,7 @@ const OPTIONS: { type: SampleFloorPlanType; label: string; description: string }
 export function SampleFloorPlanModal({ onSelect, onCancel }: SampleFloorPlanModalProps) {
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/30">
-      <div className="w-80 rounded-lg bg-white p-4 shadow-lg">
+      <div className="w-[min(20rem,calc(100vw-2rem))] rounded-lg bg-white p-4 shadow-lg">
         <h2 className="mb-1 text-sm font-semibold text-gray-900">Load a sample blueprint</h2>
         <p className="mb-3 text-xs text-gray-500">Choose a floor plan to trace and furnish.</p>
         <div className="flex flex-col gap-2">

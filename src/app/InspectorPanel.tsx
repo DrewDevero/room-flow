@@ -9,8 +9,8 @@ export function InspectorPanel() {
   const selection = useUiStore((s) => s.selection);
 
   return (
-    <aside className="flex w-72 shrink-0 flex-col overflow-y-auto border-l border-gray-200 bg-white p-3 text-sm">
-      <h3 className="mb-2 text-xs font-semibold uppercase text-gray-500">Inspector</h3>
+    <aside className="flex w-full shrink-0 flex-col overflow-y-auto bg-white p-3 text-sm md:w-72 md:border-l md:border-gray-200">
+      <h3 className="mb-2 hidden text-xs font-semibold uppercase text-gray-500 md:block">Inspector</h3>
 
       {selection?.type === 'referenceImage' && <ReferenceImageInspector id={selection.id} />}
       {selection?.type === 'wall' && <WallInspector id={selection.id} />}
