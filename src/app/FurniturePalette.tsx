@@ -37,8 +37,8 @@ export function FurniturePalette() {
   }, [search]);
 
   return (
-    <aside className="flex w-full shrink-0 flex-col overflow-y-auto bg-white md:w-56 md:border-r md:border-gray-200">
-      <div className="border-b border-gray-200 p-2">
+    <aside className="flex w-full min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain bg-white md:w-56 md:flex-none md:shrink-0 md:border-r md:border-gray-200">
+      <div className="sticky top-0 z-10 border-b border-gray-200 bg-white p-2">
         <input
           type="text"
           placeholder="Search furniture..."

@@ -1,0 +1,122 @@
+- generic [ref=f1e3]:
+  - banner [ref=f1e4]:
+    - textbox "Project name" [ref=f1e5]: Untitled Project
+    - button "Undo" [disabled] [ref=f1e6]
+    - button "Redo" [disabled] [ref=f1e7]
+    - generic [ref=f1e9]:
+      - button "ft-in" [ref=f1e10]
+      - button "metric" [ref=f1e11]
+    - button "Map Floor" [ref=f1e13]
+    - button "Wall" [ref=f1e15]
+    - button "Door" [ref=f1e16]
+    - button "Window" [ref=f1e17]
+    - generic [ref=f1e18]:
+      - checkbox "Snap" [checked] [ref=f1e19]
+      - text: Snap
+    - button "Image" [ref=f1e21]
+    - button "Calibrate" [disabled] [ref=f1e22]
+    - button "Import" [ref=f1e24]
+    - button "Export" [ref=f1e25]
+  - main [ref=f1e27]:
+    - generic [ref=f1e28]:
+      - button "2D" [ref=f1e29]
+      - button "3D" [ref=f1e30]
+      - button "Save Image" [ref=f1e31]
+    - generic [ref=f1e33]:
+      - generic:
+        - paragraph: Add a reference image (Toolbar → "Add Reference Image") to trace over a blueprint, or use "Map Floor" / "Wall" to start drawing walls directly.
+        - button "Load Sample Blueprint" [ref=f1e34]
+  - navigation [ref=f1e37]:
+    - button "Furniture" [active] [ref=f1e38]
+    - button "Inspector" [ref=f1e39]
+  - generic [ref=f1e40]:
+    - button "Close panel" [ref=f1e41]
+    - generic [ref=f1e42]:
+      - generic [ref=f1e43]:
+        - heading "Furniture" [level=2] [ref=f1e44]
+        - button "Done" [ref=f1e45]
+      - complementary [ref=f1e47]:
+        - textbox "Search furniture" [ref=f1e49]:
+          - /placeholder: Search furniture...
+        - generic [ref=f1e50]:
+          - heading "Basic Shapes" [level=3] [ref=f1e51]
+          - generic [ref=f1e52]:
+            - button "Rectangle 1'-11 5/8\" × 1'-11 5/8\"" [ref=f1e53]:
+              - generic [ref=f1e55]:
+                - generic [ref=f1e56]: Rectangle
+                - generic [ref=f1e57]: 1'-11 5/8" × 1'-11 5/8"
+            - button "Circle 1'-11 5/8\" × 1'-11 5/8\"" [ref=f1e58]:
+              - generic [ref=f1e60]:
+                - generic [ref=f1e61]: Circle
+                - generic [ref=f1e62]: 1'-11 5/8" × 1'-11 5/8"
+            - button "L-Shape 2'-11 3/8\" × 2'-11 3/8\"" [ref=f1e63]:
+              - generic [ref=f1e65]:
+                - generic [ref=f1e66]: L-Shape
+                - generic [ref=f1e67]: 2'-11 3/8" × 2'-11 3/8"
+        - generic [ref=f1e68]:
+          - heading "Seating" [level=3] [ref=f1e69]
+          - generic [ref=f1e70]:
+            - button "Sofa 6'-11 7/8\" × 2'-11 3/8\"" [ref=f1e71]:
+              - generic [ref=f1e73]:
+                - generic [ref=f1e74]: Sofa
+                - generic [ref=f1e75]: 6'-11 7/8" × 2'-11 3/8"
+            - button "Armchair 2'-9 1/2\" × 2'-9 1/2\"" [ref=f1e76]:
+              - generic [ref=f1e78]:
+                - generic [ref=f1e79]: Armchair
+                - generic [ref=f1e80]: 2'-9 1/2" × 2'-9 1/2"
+            - button "Dining Chair 1'-5 3/4\" × 1'-7 5/8\"" [ref=f1e81]:
+              - generic [ref=f1e83]:
+                - generic [ref=f1e84]: Dining Chair
+                - generic [ref=f1e85]: 1'-5 3/4" × 1'-7 5/8"
+        - generic [ref=f1e86]:
+          - heading "Sleeping" [level=3] [ref=f1e87]
+          - generic [ref=f1e88]:
+            - button "Queen Bed 4'-11 7/8\" × 6'-7 7/8\"" [ref=f1e89]:
+              - generic [ref=f1e91]:
+                - generic [ref=f1e92]: Queen Bed
+                - generic [ref=f1e93]: 4'-11 7/8" × 6'-7 7/8"
+            - button "Twin Bed 3'-3\" × 6'-2 3/4\"" [ref=f1e94]:
+              - generic [ref=f1e96]:
+                - generic [ref=f1e97]: Twin Bed
+                - generic [ref=f1e98]: 3'-3" × 6'-2 3/4"
+        - generic [ref=f1e99]:
+          - heading "Tables" [level=3] [ref=f1e100]
+          - generic [ref=f1e101]:
+            - button "Dining Table 4'-11\" × 2'-11 3/8\"" [ref=f1e102]:
+              - generic [ref=f1e104]:
+                - generic [ref=f1e105]: Dining Table
+                - generic [ref=f1e106]: 4'-11" × 2'-11 3/8"
+            - button "Coffee Table (Round) 2'-11 3/8\" × 2'-11 3/8\"" [ref=f1e107]:
+              - generic [ref=f1e109]:
+                - generic [ref=f1e110]: Coffee Table (Round)
+                - generic [ref=f1e111]: 2'-11 3/8" × 2'-11 3/8"
+            - button "Desk 3'-11 1/4\" × 1'-11 5/8\"" [ref=f1e112]:
+              - generic [ref=f1e114]:
+                - generic [ref=f1e115]: Desk
+                - generic [ref=f1e116]: 3'-11 1/4" × 1'-11 5/8"
+        - generic [ref=f1e117]:
+          - heading "Storage" [level=3] [ref=f1e118]
+          - generic [ref=f1e119]:
+            - button "Dresser 3'-11 1/4\" × 1'-7 5/8\"" [ref=f1e120]:
+              - generic [ref=f1e122]:
+                - generic [ref=f1e123]: Dresser
+                - generic [ref=f1e124]: 3'-11 1/4" × 1'-7 5/8"
+            - button "Bookshelf 2'-11 3/8\" × 0'-11 3/4\"" [ref=f1e125]:
+              - generic [ref=f1e127]:
+                - generic [ref=f1e128]: Bookshelf
+                - generic [ref=f1e129]: 2'-11 3/8" × 0'-11 3/4"
+            - button "Corner Wardrobe 3'-11 1/4\" × 3'-11 1/4\"" [ref=f1e130]:
+              - generic [ref=f1e132]:
+                - generic [ref=f1e133]: Corner Wardrobe
+                - generic [ref=f1e134]: 3'-11 1/4" × 3'-11 1/4"
+        - generic [ref=f1e135]:
+          - heading "Appliances" [level=3] [ref=f1e136]
+          - generic [ref=f1e137]:
+            - button "Refrigerator 2'-11 3/8\" × 2'-5 1/2\"" [ref=f1e138]:
+              - generic [ref=f1e140]:
+                - generic [ref=f1e141]: Refrigerator
+                - generic [ref=f1e142]: 2'-11 3/8" × 2'-5 1/2"
+            - button "Washer/Dryer 2'-3 1/2\" × 2'-3 1/2\"" [ref=f1e143]:
+              - generic [ref=f1e145]:
+                - generic [ref=f1e146]: Washer/Dryer
+                - generic [ref=f1e147]: 2'-3 1/2" × 2'-3 1/2"
