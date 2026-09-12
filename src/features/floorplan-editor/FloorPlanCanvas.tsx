@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Circle, Group, Layer, Line, Stage, Image as KonvaImage } from 'react-konva';
+import { Circle, Group, Layer, Line, Stage, Image as KonvaImage, Transformer } from 'react-konva';
 import useImage from 'use-image';
 import { v4 as uuid } from 'uuid';
 import type Konva from 'konva';
@@ -100,6 +100,7 @@ export function FloorPlanCanvas() {
   const setArmedCatalogId = useUiStore((s) => s.setArmedCatalogId);
   const finishMappingRequestId = useUiStore((s) => s.finishMappingRequestId);
   const exportImageRequestId = useUiStore((s) => s.exportImageRequestId);
+  const exportImageViewMode = useUiStore((s) => s.exportImageViewMode);
   const showToast = useToastStore((s) => s.showToast);
 
   useEffect(() => {
@@ -153,18 +154,23 @@ export function FloorPlanCanvas() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [finishMappingRequestId]);
 
-  // Triggered by the toolbar's "Save Image" button; exports the current 2D
+  // Triggered by the toolbar's "Save 2D Image" action; exports the current 2D
   // canvas (grid, walls, furniture, reference image) as a PNG.
-  const isFirstExportRequest = useRef(true);
   useEffect(() => {
-    if (isFirstExportRequest.current) {
-      isFirstExportRequest.current = false;
-      return;
-    }
-    const dataUrl = stageRef.current?.toDataURL({ pixelRatio: 2 });
-    if (dataUrl) downloadDataUrl(dataUrl, `${sanitizeFileName(projectName)}-2d.png`);
+    if (exportImageRequestId === 0 || exportImageViewMode !== '2d') return;
+    let nextFrame = 0;
+    const frame = requestAnimationFrame(() => {
+      nextFrame = requestAnimationFrame(() => {
+        const dataUrl = stageRef.current?.toDataURL({ pixelRatio: 2 });
+        if (dataUrl) downloadDataUrl(dataUrl, `${sanitizeFileName(projectName)}-2d.png`);
+      });
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      cancelAnimationFrame(nextFrame);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exportImageRequestId]);
+  }, [exportImageRequestId, exportImageViewMode]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -670,6 +676,8 @@ export function FloorPlanCanvas() {
                   selected={selection?.type === 'referenceImage' && selection.id === image.id}
                   onSelect={() => setSelection({ type: 'referenceImage', id: image.id })}
                   onTransform={(changes) => updateReferenceImageTransform(image.id, changes)}
+                  onScale={(pixelsPerMm) => setReferenceImagePixelsPerMm(image.id, pixelsPerMm)}
+                  zoom={zoom}
                 />
               ))}
             </Group>
@@ -774,28 +782,72 @@ interface ReferenceImageNodeProps {
   selected: boolean;
   onSelect: () => void;
   onTransform: (changes: Partial<Pick<ReferenceImage, 'offsetMm' | 'rotationDeg'>>) => void;
+  onScale: (pixelsPerMm: number) => void;
+  zoom: number;
 }
 
-function ReferenceImageNode({ image, selected, onSelect, onTransform }: ReferenceImageNodeProps) {
+function ReferenceImageNode({
+  image,
+  selected,
+  onSelect,
+  onTransform,
+  onScale,
+  zoom,
+}: ReferenceImageNodeProps) {
   const [htmlImage] = useImage(image.dataUrl);
+  const imageRef = useRef<Konva.Image>(null);
+  const transformerRef = useRef<Konva.Transformer>(null);
   const widthMm = image.naturalWidthPx / image.pixelsPerMm;
   const heightMm = image.naturalHeightPx / image.pixelsPerMm;
 
+  useEffect(() => {
+    if (selected && transformerRef.current && imageRef.current) {
+      transformerRef.current.nodes([imageRef.current]);
+      transformerRef.current.getLayer()?.batchDraw();
+    }
+  }, [selected]);
+
   return (
-    <KonvaImage
-      image={htmlImage}
-      x={image.offsetMm.x}
-      y={image.offsetMm.y}
-      width={widthMm}
-      height={heightMm}
-      rotation={image.rotationDeg}
-      opacity={image.opacity}
-      draggable={!image.locked}
-      stroke={selected ? '#2563eb' : undefined}
-      strokeWidth={selected ? 2 : 0}
-      onClick={onSelect}
-      onTap={onSelect}
-      onDragEnd={(e) => onTransform({ offsetMm: { x: e.target.x(), y: e.target.y() } })}
-    />
+    <>
+      <KonvaImage
+        ref={imageRef}
+        image={htmlImage}
+        x={image.offsetMm.x}
+        y={image.offsetMm.y}
+        width={widthMm}
+        height={heightMm}
+        rotation={image.rotationDeg}
+        opacity={image.opacity}
+        draggable={!image.locked}
+        stroke={selected ? '#2563eb' : undefined}
+        strokeWidth={selected ? 2 : 0}
+        onClick={onSelect}
+        onTap={onSelect}
+        onDragEnd={(e) => onTransform({ offsetMm: { x: e.target.x(), y: e.target.y() } })}
+        onTransformEnd={() => {
+          const node = imageRef.current;
+          if (!node) return;
+          const nextWidthMm = Math.max(10, widthMm * node.scaleX());
+          node.scaleX(1);
+          node.scaleY(1);
+          onScale(image.naturalWidthPx / nextWidthMm);
+          onTransform({
+            offsetMm: { x: node.x(), y: node.y() },
+            rotationDeg: node.rotation(),
+          });
+        }}
+      />
+      {selected && !image.locked && (
+        <Transformer
+          ref={transformerRef}
+          rotateEnabled
+          keepRatio
+          enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right']}
+          rotateAnchorOffset={20 / zoom}
+          ignoreStroke
+          flipEnabled={false}
+        />
+      )}
+    </>
   );
 }

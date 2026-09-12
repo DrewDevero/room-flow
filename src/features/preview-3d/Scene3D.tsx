@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { useProjectStore } from '../../state/projectStore';
@@ -15,20 +15,26 @@ function ExportHandler() {
   const { gl, scene, camera } = useThree();
   const projectName = useProjectStore((s) => s.project.name);
   const exportImageRequestId = useUiStore((s) => s.exportImageRequestId);
-  const isFirstExportRequest = useRef(true);
+  const exportImageViewMode = useUiStore((s) => s.exportImageViewMode);
 
   useEffect(() => {
-    if (isFirstExportRequest.current) {
-      isFirstExportRequest.current = false;
-      return;
-    }
-    // Render one more frame right before capturing, since the buffer may
-    // otherwise reflect a stale frame from before the export was requested.
-    gl.render(scene, camera);
-    const dataUrl = gl.domElement.toDataURL('image/png');
-    downloadDataUrl(dataUrl, `${sanitizeFileName(projectName)}-3d.png`);
+    if (exportImageRequestId === 0 || exportImageViewMode !== '3d') return;
+    let nextFrame = 0;
+    const frame = requestAnimationFrame(() => {
+      nextFrame = requestAnimationFrame(() => {
+        // Render one more frame right before capturing, since the buffer may
+        // otherwise reflect a stale frame from before the export was requested.
+        gl.render(scene, camera);
+        const dataUrl = gl.domElement.toDataURL('image/png');
+        downloadDataUrl(dataUrl, `${sanitizeFileName(projectName)}-3d.png`);
+      });
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      cancelAnimationFrame(nextFrame);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exportImageRequestId]);
+  }, [exportImageRequestId, exportImageViewMode]);
 
   return null;
 }

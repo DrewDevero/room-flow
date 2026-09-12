@@ -36,7 +36,7 @@ export function WallMesh3D({ wall }: WallMesh3DProps) {
             {segment.material === 'glass' ? (
               <meshStandardMaterial color="#93c5fd" transparent opacity={0.4} />
             ) : (
-              <meshStandardMaterial color="#9ca3af" />
+              <meshStandardMaterial color="#9ca3af" transparent opacity={0.68} />
             )}
           </mesh>
         );

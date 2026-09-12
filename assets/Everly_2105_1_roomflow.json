@@ -3,7 +3,7 @@
   "name": "Everly_2105_1",
   "unitSystem": "imperial",
   "createdAt": "2026-09-05T03:19:02.548Z",
-  "updatedAt": "2026-09-05T05:17:27.577Z",
+  "updatedAt": "2026-09-12T16:28:15.065Z",
   "referenceImages": [
     {
       "id": "41a5a1ff-ff17-4c59-ab7a-0d4929411ed5",
@@ -318,14 +318,14 @@
           "catalogId": "dining-chair",
           "name": "Dining Chair",
           "shape": "rect",
-          "widthMm": 450,
-          "depthMm": 500,
+          "widthMm": 449.9999999999956,
+          "depthMm": 499.9999999999953,
           "heightMm": 900,
           "position": {
-            "x": 966.7410726429052,
-            "y": -3157.2397016428495
+            "x": 1116.831784392888,
+            "y": -3176.001040611578
           },
-          "rotationDeg": 0,
+          "rotationDeg": 89.99999999999999,
           "colorHex": "#0072B2"
         },
         {
@@ -393,14 +393,14 @@
           "catalogId": "washer-dryer",
           "name": "Washer/Dryer",
           "shape": "rect",
-          "widthMm": 700,
-          "depthMm": 736.5999999999999,
+          "widthMm": 699.9999999999984,
+          "depthMm": 736.5999999999991,
           "heightMm": 850,
           "position": {
-            "x": 1889.4509734821822,
-            "y": 2376.6767836953395
+            "x": 1870.6896345134633,
+            "y": 2376.6767836953304
           },
-          "rotationDeg": 0,
+          "rotationDeg": 90,
           "colorHex": "#CC79A7"
         },
         {
@@ -436,7 +436,7 @@
         {
           "id": "628ba077-3e11-47b1-811c-8a1c185827c5",
           "catalogId": "basic-rect",
-          "name": "Rectangle",
+          "name": "Work Desk",
           "shape": "rect",
           "widthMm": 761.9999999999999,
           "depthMm": 914.3999999999999,
@@ -468,14 +468,14 @@
           "catalogId": "basic-rect",
           "name": "Toilet",
           "shape": "rect",
-          "widthMm": 600,
-          "depthMm": 600,
+          "widthMm": 600.0000000000068,
+          "depthMm": 527.6046832543493,
           "heightMm": 750,
           "position": {
-            "x": -1527.996470743834,
-            "y": 1893.7766013590563
+            "x": -1481.4566242644592,
+            "y": 1924.8031656786382
           },
-          "rotationDeg": 0,
+          "rotationDeg": -89.99999999999997,
           "colorHex": "#a76509"
         },
         {
@@ -498,14 +498,14 @@
           "catalogId": "basic-rect",
           "name": "Bathroom Sink",
           "shape": "rect",
-          "widthMm": 488.56149638393816,
-          "depthMm": 544.2807481919684,
+          "widthMm": 488.5614963839413,
+          "depthMm": 451.20105523325907,
           "heightMm": 750,
           "position": {
-            "x": -1565.1426386158669,
-            "y": 1160.1397858866121
+            "x": -1508.2606040299872,
+            "y": 1191.1663502061967
           },
-          "rotationDeg": 0,
+          "rotationDeg": -90.00000000000011,
           "colorHex": "#a76509"
         },
         {
@@ -513,14 +513,14 @@
           "catalogId": "basic-rect",
           "name": "Closet",
           "shape": "rect",
-          "widthMm": 581.4269160639869,
-          "depthMm": 730.0115875520806,
+          "widthMm": 581.4269160640052,
+          "depthMm": 440.4303205694432,
           "heightMm": 750,
           "position": {
-            "x": 190.01379333716804,
-            "y": 955.8358625904889
+            "x": 200.35598144376362,
+            "y": 955.8358625905232
           },
-          "rotationDeg": 0,
+          "rotationDeg": -89.99999999999983,
           "colorHex": "#009e73"
         },
         {
@@ -528,14 +528,14 @@
           "catalogId": "basic-rect",
           "name": "Closet",
           "shape": "rect",
-          "widthMm": 525.7076642559499,
-          "depthMm": 971.4616787202405,
+          "widthMm": 816.5084182714997,
+          "depthMm": 380.05014904851714,
           "heightMm": 750,
           "position": {
-            "x": 1963.7433092262281,
-            "y": 575.087641902255
+            "x": 1960.644077281507,
+            "y": 598.5393156130684
           },
-          "rotationDeg": 0,
+          "rotationDeg": 89.99999999999987,
           "colorHex": "#009e73"
         }
       ]

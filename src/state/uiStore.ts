@@ -11,6 +11,8 @@ export type EditorTool =
   | 'opening-window'
   | 'map-floor';
 
+export type ViewMode = '2d' | '3d';
+
 export type Selection =
   | { type: 'referenceImage'; id: string }
   | { type: 'wall'; id: string }
@@ -19,6 +21,9 @@ export type Selection =
   | null;
 
 interface UiState {
+  viewMode: ViewMode;
+  setViewMode: (viewMode: ViewMode) => void;
+
   activeTool: EditorTool;
   setActiveTool: (tool: EditorTool) => void;
 
@@ -39,15 +44,18 @@ interface UiState {
   finishMappingRequestId: number;
   requestFinishMapping: () => void;
 
-  // Incremented to ask whichever view (2D or 3D) is currently mounted to
-  // export a snapshot image of itself.
+  // Incremented to ask the selected 2D/3D view to export a snapshot image of itself.
   exportImageRequestId: number;
-  requestExportImage: () => void;
+  exportImageViewMode: ViewMode | null;
+  requestExportImage: (viewMode: ViewMode) => void;
 }
 
 const DEFAULT_ZOOM = 0.15; // ~150 screen px per meter, a reasonable initial fit
 
 export const useUiStore = create<UiState>()((set) => ({
+  viewMode: '2d',
+  setViewMode: (viewMode) => set({ viewMode }),
+
   activeTool: 'select',
   setActiveTool: (tool) => set({ activeTool: tool }),
 
@@ -67,5 +75,11 @@ export const useUiStore = create<UiState>()((set) => ({
   requestFinishMapping: () => set((s) => ({ finishMappingRequestId: s.finishMappingRequestId + 1 })),
 
   exportImageRequestId: 0,
-  requestExportImage: () => set((s) => ({ exportImageRequestId: s.exportImageRequestId + 1 })),
+  exportImageViewMode: null,
+  requestExportImage: (viewMode) =>
+    set((s) => ({
+      viewMode,
+      exportImageViewMode: viewMode,
+      exportImageRequestId: s.exportImageRequestId + 1,
+    })),
 }));

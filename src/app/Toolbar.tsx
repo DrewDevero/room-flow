@@ -1,11 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useProjectStore, useProjectTemporal } from '../state/projectStore';
 import { useUiStore, type EditorTool } from '../state/uiStore';
-import { AddReferenceImageButton } from '../features/floorplan-editor/AddReferenceImageButton';
-import { importProjectFile } from '../state/fileIntake';
+import { importProjectFile, importReferenceImageFile } from '../state/fileIntake';
 import { exportProjectToFile } from '../state/persistence';
 
 export function Toolbar() {
+  const [openMenu, setOpenMenu] = useState<'import' | 'export' | null>(null);
   const project = useProjectStore((s) => s.project);
   const projectName = project.name;
   const unitSystem = project.unitSystem;
@@ -17,7 +17,9 @@ export function Toolbar() {
   const snapEnabled = useUiStore((s) => s.snapEnabled);
   const setSnapEnabled = useUiStore((s) => s.setSnapEnabled);
   const requestFinishMapping = useUiStore((s) => s.requestFinishMapping);
-  const importInputRef = useRef<HTMLInputElement>(null);
+  const requestExportImage = useUiStore((s) => s.requestExportImage);
+  const projectImportInputRef = useRef<HTMLInputElement>(null);
+  const referenceImageInputRef = useRef<HTMLInputElement>(null);
 
   const canUndo = useProjectTemporal((s) => s.pastStates.length > 0);
   const canRedo = useProjectTemporal((s) => s.futureStates.length > 0);
@@ -48,7 +50,7 @@ export function Toolbar() {
   }, [undo, redo]);
 
   return (
-    <header className="flex h-12 shrink-0 items-center gap-2 overflow-x-auto border-b border-gray-200 bg-white px-2 text-sm sm:gap-3 sm:px-3 [&>*]:shrink-0">
+    <header className="relative z-50 flex h-12 shrink-0 items-center gap-2 overflow-x-auto overflow-y-visible border-b border-gray-200 bg-white px-2 text-sm sm:gap-3 sm:px-3 [&>*]:shrink-0">
       <input
         className="w-28 rounded border border-transparent px-2 py-1 font-medium hover:border-gray-300 focus:border-gray-400 focus:outline focus:outline-2 focus:outline-blue-500 sm:w-48"
         value={projectName}
@@ -143,7 +145,6 @@ export function Toolbar() {
         Snap
       </label>
       <div className="mx-2 h-5 w-px bg-gray-200" />
-      <AddReferenceImageButton />
       <button
         type="button"
         className={`rounded px-2 py-1 ${
@@ -156,7 +157,7 @@ export function Toolbar() {
       </button>
       <div className="mx-2 h-5 w-px bg-gray-200" />
       <input
-        ref={importInputRef}
+        ref={projectImportInputRef}
         type="file"
         accept="application/json,.json"
         className="hidden"
@@ -167,20 +168,103 @@ export function Toolbar() {
           void importProjectFile(file);
         }}
       />
-      <button
-        type="button"
-        className="rounded px-2 py-1 hover:bg-gray-100"
-        onClick={() => importInputRef.current?.click()}
-      >
-        Import
-      </button>
-      <button
-        type="button"
-        className="rounded px-2 py-1 hover:bg-gray-100"
-        onClick={() => exportProjectToFile(project)}
-      >
-        Export
-      </button>
+      <input
+        ref={referenceImageInputRef}
+        type="file"
+        accept="image/png,image/jpeg"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = '';
+          if (!file) return;
+          void importReferenceImageFile(file);
+        }}
+      />
+      <div className="relative">
+        <button
+          type="button"
+          aria-haspopup="menu"
+          aria-expanded={openMenu === 'import'}
+          className="rounded border border-gray-300 bg-white px-2 py-1 text-xs hover:bg-gray-50"
+          onClick={() => setOpenMenu((menu) => (menu === 'import' ? null : 'import'))}
+        >
+          Import
+        </button>
+        {openMenu === 'import' && (
+          <div className="absolute right-0 top-full z-[60] mt-1 flex w-44 flex-col rounded border border-gray-200 bg-white py-1 text-left text-xs shadow-lg" role="menu">
+            <button
+              type="button"
+              className="px-3 py-2 text-left hover:bg-gray-100"
+              role="menuitem"
+              onClick={() => {
+                setOpenMenu(null);
+                projectImportInputRef.current?.click();
+              }}
+            >
+              Project File (.json)
+            </button>
+            <button
+              type="button"
+              className="px-3 py-2 text-left hover:bg-gray-100"
+              role="menuitem"
+              onClick={() => {
+                setOpenMenu(null);
+                referenceImageInputRef.current?.click();
+              }}
+            >
+              Reference Image
+            </button>
+          </div>
+        )}
+      </div>
+      <div className="relative">
+        <button
+          type="button"
+          aria-haspopup="menu"
+          aria-expanded={openMenu === 'export'}
+          className="rounded border border-gray-300 bg-white px-2 py-1 text-xs hover:bg-gray-50"
+          onClick={() => setOpenMenu((menu) => (menu === 'export' ? null : 'export'))}
+        >
+          Export
+        </button>
+        {openMenu === 'export' && (
+          <div className="absolute right-0 top-full z-[60] mt-1 flex w-40 flex-col rounded border border-gray-200 bg-white py-1 text-left text-xs shadow-lg" role="menu">
+            <button
+              type="button"
+              className="px-3 py-2 text-left hover:bg-gray-100"
+              role="menuitem"
+              onClick={() => {
+                setOpenMenu(null);
+                exportProjectToFile(project);
+              }}
+            >
+              Project File
+            </button>
+            <button
+              type="button"
+              className="px-3 py-2 text-left hover:bg-gray-100"
+              role="menuitem"
+              onClick={() => {
+                setOpenMenu(null);
+                requestExportImage('2d');
+              }}
+            >
+              Save 2D Image
+            </button>
+            <button
+              type="button"
+              className="px-3 py-2 text-left hover:bg-gray-100"
+              role="menuitem"
+              onClick={() => {
+                setOpenMenu(null);
+                requestExportImage('3d');
+              }}
+            >
+              Save 3D Image
+            </button>
+          </div>
+        )}
+      </div>
     </header>
   );
 }

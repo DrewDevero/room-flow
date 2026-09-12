@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { useProjectStore } from '../state/projectStore';
 import { useUiStore } from '../state/uiStore';
 import { formatArea, formatLength, parseLength } from '../core/units/length';
@@ -350,20 +351,74 @@ function LengthField({
   unitSystem: UnitSystem;
   onChange: (mm: number) => void;
 }) {
+  const displayValue = formatLength(valueMm, unitSystem);
+
   return (
     <label className="flex flex-col gap-1 text-xs text-gray-600">
       {label}
-      <input
-        type="text"
-        className="rounded border border-gray-300 px-2 py-1 text-sm"
-        defaultValue={formatLength(valueMm, unitSystem)}
-        onBlur={(e) => {
-          const parsed = parseLength(e.target.value, unitSystem);
-          if (parsed !== null && parsed > 0) onChange(parsed);
-          e.target.value = formatLength(parsed ?? valueMm, unitSystem);
-        }}
+      <LengthInput
+        key={`${unitSystem}:${valueMm}`}
+        displayValue={displayValue}
+        valueMm={valueMm}
+        unitSystem={unitSystem}
+        onChange={onChange}
       />
     </label>
+  );
+}
+
+function LengthInput({
+  displayValue,
+  valueMm,
+  unitSystem,
+  onChange,
+}: {
+  displayValue: string;
+  valueMm: number;
+  unitSystem: UnitSystem;
+  onChange: (mm: number) => void;
+}) {
+  const [draft, setDraft] = useState(displayValue);
+  const skipNextBlurCommit = useRef(false);
+
+  const reset = () => setDraft(formatLength(valueMm, unitSystem));
+
+  const commit = (inputValue: string) => {
+    const parsed = parseLength(inputValue, unitSystem);
+    if (parsed !== null && parsed > 0) {
+      onChange(parsed);
+      setDraft(formatLength(parsed, unitSystem));
+      return;
+    }
+    reset();
+  };
+
+  return (
+    <input
+      type="text"
+      className="rounded border border-gray-300 px-2 py-1 text-sm"
+      value={draft}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={(e) => {
+        if (skipNextBlurCommit.current) {
+          skipNextBlurCommit.current = false;
+          return;
+        }
+        commit(e.currentTarget.value);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          commit(e.currentTarget.value);
+          skipNextBlurCommit.current = true;
+          e.currentTarget.blur();
+        }
+        if (e.key === 'Escape') {
+          reset();
+          skipNextBlurCommit.current = true;
+          e.currentTarget.blur();
+        }
+      }}
+    />
   );
 }
 
