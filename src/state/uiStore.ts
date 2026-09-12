@@ -48,6 +48,7 @@ interface UiState {
   exportImageRequestId: number;
   exportImageViewMode: ViewMode | null;
   requestExportImage: (viewMode: ViewMode) => void;
+  consumeExportImageRequest: (requestId: number) => void;
 }
 
 const DEFAULT_ZOOM = 0.15; // ~150 screen px per meter, a reasonable initial fit
@@ -82,4 +83,10 @@ export const useUiStore = create<UiState>()((set) => ({
       exportImageViewMode: viewMode,
       exportImageRequestId: s.exportImageRequestId + 1,
     })),
+  consumeExportImageRequest: (requestId) =>
+    set((s) =>
+      s.exportImageRequestId === requestId
+        ? { exportImageViewMode: null }
+        : {},
+    ),
 }));

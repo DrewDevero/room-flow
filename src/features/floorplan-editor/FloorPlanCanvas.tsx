@@ -101,6 +101,7 @@ export function FloorPlanCanvas() {
   const finishMappingRequestId = useUiStore((s) => s.finishMappingRequestId);
   const exportImageRequestId = useUiStore((s) => s.exportImageRequestId);
   const exportImageViewMode = useUiStore((s) => s.exportImageViewMode);
+  const consumeExportImageRequest = useUiStore((s) => s.consumeExportImageRequest);
   const showToast = useToastStore((s) => s.showToast);
 
   useEffect(() => {
@@ -163,6 +164,7 @@ export function FloorPlanCanvas() {
       nextFrame = requestAnimationFrame(() => {
         const dataUrl = stageRef.current?.toDataURL({ pixelRatio: 2 });
         if (dataUrl) downloadDataUrl(dataUrl, `${sanitizeFileName(projectName)}-2d.png`);
+        consumeExportImageRequest(exportImageRequestId);
       });
     });
     return () => {
@@ -170,7 +172,7 @@ export function FloorPlanCanvas() {
       cancelAnimationFrame(nextFrame);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exportImageRequestId, exportImageViewMode]);
+  }, [exportImageRequestId, exportImageViewMode, consumeExportImageRequest]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

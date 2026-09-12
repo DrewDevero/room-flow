@@ -16,6 +16,7 @@ function ExportHandler() {
   const projectName = useProjectStore((s) => s.project.name);
   const exportImageRequestId = useUiStore((s) => s.exportImageRequestId);
   const exportImageViewMode = useUiStore((s) => s.exportImageViewMode);
+  const consumeExportImageRequest = useUiStore((s) => s.consumeExportImageRequest);
 
   useEffect(() => {
     if (exportImageRequestId === 0 || exportImageViewMode !== '3d') return;
@@ -27,6 +28,7 @@ function ExportHandler() {
         gl.render(scene, camera);
         const dataUrl = gl.domElement.toDataURL('image/png');
         downloadDataUrl(dataUrl, `${sanitizeFileName(projectName)}-3d.png`);
+        consumeExportImageRequest(exportImageRequestId);
       });
     });
     return () => {
@@ -34,7 +36,7 @@ function ExportHandler() {
       cancelAnimationFrame(nextFrame);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exportImageRequestId, exportImageViewMode]);
+  }, [exportImageRequestId, exportImageViewMode, consumeExportImageRequest]);
 
   return null;
 }
